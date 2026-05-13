@@ -321,6 +321,69 @@
 </section>
 <!-- End paper abstract -->
 
+<!-- Training Protocol Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <h2 class="title is-3 has-text-centered">Training Protocol and Data Splits</h2>
+
+    <div class="content has-text-justified">
+
+      <p>
+        Our Label-Free Hidden-Cohort Fairness (LHCF) framework consists of two stages: (i) hidden cohort discovery and (ii) fairness-aware training. The entire pipeline is designed to be fully split-aware, ensuring no information leakage between training, validation, and test sets.
+      </p>
+
+      <h3 class="title is-4">Hidden Cohort Discovery (Step 1)</h3>
+
+      <p>
+        The first stage performs unsupervised discovery of latent cohorts from image representations. This process consists of three components: (i) image representation learning, (ii) supervised dimensionality reduction, and (iii) clustering via Gaussian Mixture Models (GMM) with model selection using the Bayesian Information Criterion (BIC).
+      </p>
+
+      <p>
+        For representation learning and supervised dimensionality reduction, models are trained using only the training split, with validation data used exclusively for model selection. Specifically, models are trained for up to 60 epochs using the Adam optimizer with a learning rate of 1e-4 and weight decay of 1e-4. Early stopping is applied based on stagnation of the overall validation AUC for 10 consecutive epochs, and the best checkpoint is selected using validation performance.
+      </p>
+
+      <p>
+        To ensure a fully split-aware pipeline and avoid any information leakage, the GMM is fitted using representations extracted from the combined training and validation sets only, after model selection has been completed. The number of clusters is determined via BIC evaluated on these representations. The test set is strictly held out during both model training and GMM fitting.
+      </p>
+
+      <p>
+        At inference time, cluster assignments for test samples are obtained by applying the fitted GMM (trained on train+validation representations) to the test representations. This ensures that hidden cohort discovery is performed without access to test data, while allowing consistent cohort assignment across all splits.
+      </p>
+
+      <h3 class="title is-4">Fairness-Aware Training (Step 2)</h3>
+
+      <p>
+        In the second stage, we perform fairness-aware training using the discovered hidden cohort identities as sensitive attributes. While multiple FairAI methods are evaluated in our study, we detail here the training protocol of Fair Distillation (FairDi+LHCF), as it achieves the best overall performance and is used extensively in our ablation studies.
+      </p>
+
+      <p>
+        FairDi+LHCF consists of three sub-steps: backbone pre-training (Step 0), cohort-specific teacher training (Step 1), and student distillation (Step 2).
+      </p>
+
+      <p>
+        In Step 0 (backbone pre-training), the model is trained using only the training split, with validation data used exclusively for model selection. Models are trained for up to 60 epochs using the Adam optimizer with a learning rate of 1e-4 and weight decay of 1e-4. Early stopping is applied based on stagnation of the overall validation AUC for 10 consecutive epochs, and the best checkpoint is selected using validation performance.
+      </p>
+
+      <p>
+        In Step 1 (hidden cohort-specific teacher training), separate teacher models are trained for each discovered cohort. Each teacher is initialized from the pretrained backbone, with the backbone (ResNet18) frozen and only the final classifier trained. Training uses SGD with momentum 0.9, a learning rate of 1e-5, and weight decay of 1e-5, and is performed using only the training split, with early stopping based on cohort-specific validation AUC.
+      </p>
+
+      <p>
+        In Step 2 (student training), a single student model is trained via knowledge distillation from all cohort-specific teachers. The student is initialized from the pretrained backbone, with the backbone (ResNet18) frozen and only the final classifier trained, and optimized using SGD with the same hyperparameters as the teacher models. Early stopping is based on overall validation AUC. The student learns to aggregate knowledge from all specialized teachers to balance performance across cohorts.
+      </p>
+
+      <p>
+        Across all stages, the training protocol is strictly split-aware: the training split is used for model optimization, the validation split for model selection and early stopping, and the test split is held out entirely for final evaluation. Hidden cohort assignments derived in Step 1 are applied consistently across all splits without refitting or adaptation on test data, ensuring a leakage-free evaluation.
+      </p>
+
+      <p>
+        All models are implemented in PyTorch 2.2 and trained on an NVIDIA RTX A6000 GPU.
+      </p>
+
+    </div>
+  </div>
+</section>
 
 <!-- Image carousel -->
 <section class="hero is-small">
