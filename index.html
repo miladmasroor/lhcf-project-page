@@ -343,6 +343,64 @@
   </div>
 </section>
 
+<!-- Strengths -->
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <h2 class="title is-3 has-text-centered">Strengths</h2>
+
+    <div class="content has-text-justified">
+      <ul>
+
+        <li style="margin-bottom: 20px;">
+          <strong>Fairness Beyond Predefined Demographic Attributes.</strong>
+          Conventional fairness approaches typically optimize performance across predefined demographic groups, such as sex, age, or ethnicity. However, these visible attributes may only weakly align with the latent factors that drive model behaviour and performance disparities. LHCF moves beyond this restriction by discovering appearance-based hidden cohorts directly from learned image representations and using these cohorts for fairness optimization. This allows the framework to address potential sources of disparity that may not be captured by conventional demographic partitions.
+        </li>
+
+        <li style="margin-bottom: 20px;">
+          <strong>Identification and Mitigation of Hidden Stratification.</strong>
+          Meaningful vulnerable subpopulations can remain hidden within medical imaging datasets even when standard demographic groups are considered. Such appearance-based cohorts may expose model blind spots and performance disparities that are not apparent from demographic evaluation alone. LHCF explicitly discovers these latent patient cohorts from image embeddings and subsequently treats the discovered cohort identities as sensitive attributes during fairness-aware learning, enabling fairness optimization to target hidden sources of model disparity rather than relying exclusively on known demographic groups.
+        </li>
+
+        <li>
+          <strong>Demographic-Label-Free Fairness Optimization.</strong>
+          Fairness methods that depend on demographic annotations can be difficult to deploy in real-world medical imaging settings because sensitive attributes may be missing, noisy, incomplete, or unavailable because of privacy constraints. LHCF reduces this dependency by constructing the groups required for fairness optimization directly from image representations. Consequently, demographic labels are not required during fairness-aware training, making the framework applicable to datasets where reliable sensitive-attribute annotations are unavailable.
+        </li>
+
+      </ul>
+    </div>
+
+  </div>
+</section>
+<!-- End Strengths -->
+
+
+<!-- Limitations and Future Directions -->
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <h2 class="title is-3 has-text-centered">Limitations and Future Directions</h2>
+
+    <div class="content has-text-justified">
+      <ul>
+
+        <li style="margin-bottom: 20px;">
+          <strong>Clinical Validation of Hidden-Cohort Quality.</strong>
+          LHCF discovers hidden cohorts in a data-driven manner from learned image representations, and the current framework quantitatively evaluates the characteristics and quality of these discovered cohorts. However, quantitative measures alone cannot fully establish whether the discovered appearance-based cohorts correspond to clinically meaningful latent phenotypes or clinically relevant sources of hidden stratification. A key future direction is therefore to incorporate <strong>expert-guided assessment</strong>, involving relevant clinicians, radiologists, dermatologists, or other domain experts depending on the imaging modality. Experts could examine representative samples and characteristics from each discovered cohort to determine whether the observed grouping reflects clinically meaningful visual patterns, disease characteristics, or other relevant latent factors. Combining quantitative cohort-quality measures with expert assessment could provide stronger evidence for the clinical interpretability and relevance of the hidden cohorts discovered by LHCF.
+        </li>
+
+        <li>
+          <strong>Reproducibility of Hidden-Cohort Discovery and Downstream Fairness Optimization.</strong>
+          Hidden-cohort discovery is an <strong>upstream stage of the LHCF pipeline</strong>: image representations are first clustered using an unsupervised GMM-based procedure, and the resulting <code>Cluster_ID</code> assignments are subsequently used as sensitive attributes by the <strong>downstream FairAI model</strong>. Because this upstream clustering process is unsupervised and can be sensitive to factors such as initialization and the learned representation, different clustering runs may produce variations in cohort composition and sample assignments. This variability is particularly important for LHCF because changes in the discovered cohorts can propagate to the downstream fairness optimization stage: the FairAI method may effectively optimize fairness over different cohort definitions across runs, potentially affecting the reproducibility of the final accuracy and fairness results. Future work will therefore focus on <strong>stabilizing the hidden-cohort discovery stage</strong>, evaluating cluster stability across repeated runs, and reducing the propagation of upstream clustering variability into downstream fairness-aware learning. This would improve the end-to-end reproducibility and reliability of LHCF.
+        </li>
+
+      </ul>
+    </div>
+
+  </div>
+</section>
+<!-- End Limitations and Future Directions -->
+
 <!-- Training Protocol Section -->
 <section class="section">
   <div class="container is-max-desktop">
